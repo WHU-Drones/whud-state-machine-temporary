@@ -1,7 +1,7 @@
 /**
  * @file WhudBasicControl.cpp
  * @author LauZanMo (LauZanMo@whu.edu.cn)
- * @author Chen Junpeng (LauZanMo@whu.edu.cn)
+ * @author Chen Junpeng (chenjunpeng@whu.edu.cn)
  * @brief whud_basic_control plugin
  * @version 1.0
  * @date 2021-06-04
