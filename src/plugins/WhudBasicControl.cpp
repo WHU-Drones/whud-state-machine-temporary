@@ -1,6 +1,7 @@
 /**
  * @file WhudBasicControl.cpp
  * @author LauZanMo (LauZanMo@whu.edu.cn)
+ * @author Chen Junpeng (LauZanMo@whu.edu.cn)
  * @brief whud_basic_control plugin
  * @version 1.0
  * @date 2021-06-04
@@ -21,17 +22,53 @@ using namespace std;
 namespace whud_state_machine {
 class WhudBasicControl : public PluginBase {
 public:
-/**
- * @brief Construct a new Whud Basic Control object
- */
+  /**
+   * @brief Construct a new Whud Basic Control object
+   *
+   * @note In this function, private node handle and will be initialized
+   */
   WhudBasicControl() : PluginBase(), nh_("~basic_control"){};
 
   enum Command { NONE = 0, TAKEOFF, LAND, HEIGHT_CONTROL, YAW_CONTROL };
 
+  /**
+   * @brief Plugin init
+   * 
+   * @note The mavros publisher will be initialized.
+   * 
+   * @param mavros_pub Mavros publisher passed by state machine
+   */
   void OnInit(MavRosPublisher &mavros_pub) {
     mavros_pub_ = &mavros_pub;
   }
-
+  /**
+   * @brief Set task with given parameters
+   * 
+   * @note In this function, parameters passed by state machine will be parsed,
+   * the result will be published to mavros to control basic operation.
+   * 
+   * @param param Parameter vector passed by state machine, plugins will set
+   * task according to the paramter parse:
+   * param[0]: A string denote the basic operation, it can be "takeoff", "land", 
+   * "height_control" or "yaw_control".
+   * param[1:]: The parameters needed for each basic operation. The parameters 
+   * needed for each operation are:
+   * takeoff:
+   * -param[1]: z axis speed(takeoff speed)
+   * -param[2]: takeoff height
+   * land:
+   * -param[1]: z axis speed(land speed)
+   * height_control:
+   * -param[1]: z axis speed
+   * -param[2]: target height
+   * yaw_control:
+   * -param[1]: target angle
+   * -param[2]: denote param[1] is absolute angle or relative angle, 
+   * 0 for absolute and 1 for relative.
+   * 
+   * @retval true: Parameters are parsed correctly
+   * @retval false: Parameters are parsed wrong
+   */
   bool SetTask(ros::V_string param) {
     PluginBase::SetTask(param);
     if (param[0] == "takeoff") {
@@ -73,8 +110,16 @@ public:
     } else {
       command_ = Command::NONE;
     }
-  }
 
+    return true;
+  }
+  /**
+   * @brief Spin task in regular frequency.
+   * 
+   * @note mavros_command denotes our target operation. 
+   * mavros_result denotes the operation status, 0 for no 
+   * operation now and 5 for operation is done. 
+   */
   virtual void TaskSpin() override {
     if (mavros_pub_ != nullptr && control_flag_ == true) {
       int mavros_command, mavros_result;

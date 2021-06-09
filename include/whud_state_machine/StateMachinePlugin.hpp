@@ -22,65 +22,67 @@ public:
   PluginBase(const PluginBase&) = delete;
   ~PluginBase() {}
   /**
-   * @brief Get the Task Status object
+   * @brief Get the Task Status object.
    * 
-   * @return Present status of task to judge what to do next
+   * @return TaskStatus task status now.
    */
   inline TaskStatus GetTaskStatus() const {
     return task_status_;
   }
   /**
-   * @brief Get the Interrupt Signal object
-   * @return A bollean variable to judge whether interrupt signal is catched
-   * @retval true Catch interrupt signal
-   * @retval false No interrupt signal is catched yet
+   * @brief Get the Interrupt Signal object.
+   * 
+   * @retval true Interrupt signal is catched.
+   * @return false Interrupt signal is not catched.
    */
   inline bool GetInterruptSignal() const {
     return interrupt_signal_;
   }
   /**
-   * @brief Enable the moving control of plugin
+   * @brief Enable the mavros control of plugin.
    */
   inline void EnableControl() {
     control_flag_ = true;
   }
-  /**
-   * @brief Disable the moving control of plugin
+    /**
+   * @brief Disable the mavros control of plugin.
    */
   inline void DisableControl() {
     control_flag_ = false;
   }
   /**
-   * @brief Delay for a centain time when task is done or out of time
-   * @return A boolean variable to judge if delay procedure is over
-   * @retval true Delay is over
-   * @retval false Delay is not over yet
-   */
-  inline bool Delay() {
-    return (delay_counter_++ >= delay_time_ * loop_frequency_);
-  }
-  /**
-   * @brief Get the parameters needed and initialze the mavros publishers in plugin
+   * @brief Judge if delay is finished.
    * 
-   * @param mavros_pub Mavros publishers to initialize the publishers in plugins 
+   * @return true Delay time is finished. 
+   * @return false Delay time is not finished. 
+   */
+  inline bool FinishDelay() {
+    return (finish_delay_counter_++ >= finish_delay_time_ * loop_frequency_);
+  }
+
+  /**
+   * @brief Plugin init.
+   * 
+   * @param mavros_pub Mavros publisher passed by state machine.
    */
   virtual void OnInit(MavRosPublisher& mavros_pub) {
     base_nh_.param<int>("loop_frequency", loop_frequency_, 10);
     mavros_pub_ = &mavros_pub;
   }
   /**
-   * @brief Set the Task object
+   * @brief Set task with given parameters
    * 
-   * @param param The parameter list which contains the name of parameters needed 
-   * @return true 
-   * @return false 
+   * @note In this function, a new task is set and begin to run.
+   * 
+   * @param param Name vector of parameters needed.
+   * @return true Task is set successfully.
+   * @return false Task is set insuccessfully.
    */
-  //TODO:why?
   virtual bool SetTask(ros::V_string param) {
     task_status_ = TaskStatus::RUN;
     interrupt_signal_ = false;
-    delay_counter_ = 0;
-    SetDelay(0);
+    finish_delay_counter_ = 0;
+    SetFinishDelay(0);
   }
 
   virtual void TaskSpin() = 0;
@@ -95,11 +97,15 @@ protected:
   bool control_flag_;
 
   int loop_frequency_;
-  float delay_time_ = 0;
-  int delay_counter_;
-
-  inline void SetDelay(float time) {
-    delay_time_ = time;
+  float finish_delay_time_ = 0;
+  int finish_delay_counter_;
+  /**
+   * @brief Set the delay time.
+   * 
+   * @param time Delay time(seconds).
+   */
+  inline void SetFinishDelay(float time) {
+    finish_delay_time_ = time;
   }
 };
 
