@@ -23,7 +23,8 @@ namespace whud_state_machine {
  * @brief Initialize state machine with given parameters
  * 
  * @note Construct a new State Machine:: State Machine object, define the mavros 
- * publishers, load the plugins needed and load the main task list
+ * publishers, load the plugins needed and load the main task list, initialize service
+ * and reset task iterator.
  */
 StateMachine::StateMachine()
     : nh_("~"),
@@ -63,6 +64,7 @@ StateMachine::StateMachine()
 }
 
 StateMachine::~StateMachine() {}
+
 /**
  * @brief Start state machine and wait for shut down
  * 
@@ -80,6 +82,7 @@ void StateMachine::Run() {
   ROS_INFO("Stopping state machine...");
   spinner.stop();
 }
+
 /**
  * @brief Set a new task or spin current task when callback.
  * 
@@ -99,6 +102,7 @@ void StateMachine::LoopTimerCb(const ros::TimerEvent &event) {
 
   CheckLoopStatus();
 }
+
 /**
  * @brief Set a new main task.
  * 
@@ -141,6 +145,7 @@ void StateMachine::SetTask(const ros::TimerEvent &event) {
   // set loop status
   state_machine_status_ = StateMachineStatus::MAIN_TASK;
 }
+
 /**
  * @brief Check if interrupt task is detected and if task out of time.
  * 
@@ -209,6 +214,7 @@ void StateMachine::TaskSpin(const ros::TimerEvent &event) {
     last_interrupt_flag_ = false;
   }
 }
+
 /**
  * @brief Check current status and choose next status and task.
  * 
@@ -319,6 +325,7 @@ void StateMachine::CheckLoopStatus() {
     break;
   }
 }
+
 /**
  * @brief Create plugin object and initialize them.
  * 
@@ -329,6 +336,7 @@ void StateMachine::LoadPlugin(std::string &plugin_name) {
   plugin_map_[plugin_name]->OnInit(mavros_pub_);
   // TODO: add blacklist and whitelist for plugins
 }
+
 /**
  * @brief Reserve the basic parameters required by main task.
  * 
@@ -347,6 +355,7 @@ void StateMachine::LoadMainTask(std::string &task_name) {
   nh_.getParam(task_name + "/attach_name", task.attach_name);
   main_task_vector_.push_back(task);
 }
+
 /**
  * @brief Reserve the basic parameters required by interrupt task.
  * 
@@ -378,6 +387,7 @@ void StateMachine::SetInterruptTask(std::string &task_name) {
   } else
     current_interrupt_task_plugin_ = nullptr;
 }
+
 /**
  * @brief Restart state machine.
  * 
@@ -400,6 +410,7 @@ void StateMachine::ResetTaskIterator() {
   // reset interrupt flag
   last_interrupt_flag_ = disable_interrupt_flag_ = false;
 }
+
 /**
  * @brief Publish the current task name.
  * 

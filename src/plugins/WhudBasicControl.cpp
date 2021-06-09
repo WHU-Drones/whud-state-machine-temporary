@@ -39,8 +39,9 @@ public:
    * @param mavros_pub Mavros publisher passed by state machine
    */
   void OnInit(MavRosPublisher &mavros_pub) {
-    mavros_pub_ = &mavros_pub;
+    PluginBase::OnInit(mavros_pub);
   }
+
   /**
    * @brief Set task with given parameters
    * 
@@ -113,12 +114,13 @@ public:
 
     return true;
   }
+
   /**
    * @brief Spin task in regular frequency.
    * 
    * @note mavros_command denotes our target operation. 
-   * mavros_result denotes the operation status, 0 for no 
-   * operation now and 5 for operation is done. 
+   * mavros_result denotes the operation status, 0 for operation
+   * done and 5 for operation in progress. 
    */
   virtual void TaskSpin() override {
     if (mavros_pub_ != nullptr && control_flag_ == true) {
