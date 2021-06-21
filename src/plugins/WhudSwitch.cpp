@@ -27,25 +27,24 @@ public:
   void OnInit(MavRosPublisher &mavros_pub) {
     PluginBase::OnInit(mavros_pub);
     bash_nh_.param<bool>("switch_state",switch_state_,false);
-    finish_delay_time_=9999999;
-    loop_frequency_=10;
   }
 
   bool SetTask(ros::V_string param) {
     PluginBase::SetTask(param);
+    bash_nh_.param<bool>("switch_state",switch_state_);
+    if(param[0] >= 0 && switch_state_)
+      SetFinishDelay(float time);
+    else
+      SetFinishDelay(0);
+    
   }
 
 
   virtual void TaskSpin() override {
-      bash_nh_.param<bool>("switch_state",switch_state_,false);
-      if(!switch_state_)
-      {
-          finish_delay_time_=9999999;
-      }
-      else
-      {
-          finish_delay_time_=0;
-          task_status_ = TaskStatus::DONE;
+      bash_nh_.param<bool>("switch_state",switch_state_);
+      task_status_ = TaskStatus::DONE;
+      if(!switch_state_){
+        SetFinishDelay(0);
       }
   }
 
