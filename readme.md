@@ -26,10 +26,10 @@ Here is the description for our main tasks. Line 16 is the name of task which we
 
 Let's open the interrupt_task.yaml
 
-![image-20210614234549948](images\image-20210614234549948.png)
+<img src="images\image-20210614234549948.png" alt="image-20210614234549948" />
 
 It's almost the same as the main_task.yaml, with only one difference in line 10:
 
-![image-20210614234659188](images\image-20210614234659188.png)
+<img src="images\image-20210614234659188.png" alt="image-20210614234659188" />
 
  We assume that when interrupt task is done, it can decide which main task it will jump to, and the **return_name** is the name of task which will be jumped to  when interrupt task is done.  It also has this probability that interrupt task is not done when time is finished. In this case it will jump to the main task in which the interrupt task is stimulated, and interrupt task is disabled(it will not be stimulated again) until next main task.
