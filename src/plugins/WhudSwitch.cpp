@@ -32,7 +32,7 @@ public:
   bool SetTask(ros::V_string param) {
     PluginBase::SetTask(param);
     bash_nh_.param<bool>("switch_state",switch_state_);
-    if(param[0] >= 0 && switch_state_)
+    if(param[0] >= 0 && !switch_state_)
       SetFinishDelay(float time);
     else
       SetFinishDelay(0);

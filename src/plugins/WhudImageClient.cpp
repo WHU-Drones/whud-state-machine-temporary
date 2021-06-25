@@ -36,6 +36,16 @@ public:
     PluginBase::OnInit(mavros_pub);
   }
 
+  /**
+   * @brief Set the Image Task object
+   * 
+   * @param param A parameter list of size 2 needed by WhudImageClient plugin, where
+   * param[0]: The pid judging time. If our robot keep still for time 
+   * longer than this parameter, then our task is done.
+   * param[1]: The delay time after task is done.
+   * @retval true  Task is correctly set.
+   * @retval false Task is incorrectly set.
+   */
   virtual bool SetTask(ros::V_string param) override {
         stop_judge_ = atof(param[0].c_str());
         SetFinishDelay(atof(param[1].c_str()));
@@ -55,18 +65,27 @@ public:
     return true;
   }
 
-
+  /**
+   * @brief Judge if task is done.
+   * 
+   * @note If our robot keep speed of x any y axis smaller than our set value(0.03 here)
+   * for time longer than param[0], then our task is done.
+   * 
+   */
   virtual void TaskSpin() override {
       mavros_pub_->cmd_vel_pub.publish();
       if(vel.linear.x < 0.03 && vel.linear.y < 0.03){
         if(timer_.current_expected.now().toSec()-time_begin_>=stop_judge_)
       }
       else{
-          timer_begin=timer_.current_expected.now().toSec();
+          time_begin_=timer_.current_expected.now().toSec();
       }
   }
 
-
+  /**
+   * @brief Stop the action task
+   * 
+   */
   virtual void StopTask() override {
     image_client_.cancelGoal();
     std_msgs::Bool conversion;
@@ -83,12 +102,23 @@ private:
   actionlib::SimpleActionClient<whud_vision::ImageProcessingAction> image_client_;
 
   void ActiveCb() {}
-
+  /**
+   * @brief Use feedback from server to update control speed.
+   * 
+   * @param feedback A const pointer of size 2, where it first element means the 
+   * speed of x axis and the second element means the speed of y axis.
+   */
   void FeedbackCb(const whud_vision::ImageProcessingFeedbackConstPtr &feedback) {
       vel.linear.x=feedback->speed_control[0];
       vel.linear.y=feedback->speed_control[1];
   }
 
+  /**
+   * @brief Judge if our task is successfully done.
+   * 
+   * @param state Denote the state of action.
+   * @param result The result of action.
+   */
   void DoneCb(const actionlib::SimpleClientGoalState &state,
               const whud_vision::ImageProcessingResultConstPtr &result) {
     if (state == actionlib::SimpleClientGoalState::SUCCEEDED) {
