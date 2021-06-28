@@ -26,25 +26,24 @@ public:
 
   void OnInit(MavRosPublisher &mavros_pub) {
     PluginBase::OnInit(mavros_pub);
-    bash_nh_.param<bool>("switch_state",switch_state_,false);
   }
 
   bool SetTask(ros::V_string param) {
     PluginBase::SetTask(param);
-    bash_nh_.param<bool>("switch_state",switch_state_);
-    if(param[0] >= 0 && !switch_state_)
-      SetFinishDelay(float time);
+    if(bash_nh_.hasParam(param[0])){
+      switch_name_=param[0];
+      bash_nh_.setParam(switch_name_,false);
+      return true;
+    }
     else
-      SetFinishDelay(0);
-    
+      return false;    
   }
 
 
   virtual void TaskSpin() override {
-      bash_nh_.param<bool>("switch_state",switch_state_);
-      task_status_ = TaskStatus::DONE;
-      if(!switch_state_){
-        SetFinishDelay(0);
+      bash_nh_.param<bool>(switch_name_,switch_state_);
+      if(switch_state_){
+        task_status_ = TaskStatus::DONE;
       }
   }
 
@@ -52,6 +51,7 @@ public:
 
 private:
   bool switch_state_;
+  std::string switch_name_;
 };
 
 }  // namespace whud_state_machine
