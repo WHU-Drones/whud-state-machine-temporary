@@ -132,28 +132,28 @@ public:
       case Command::TAKEOFF:
         if (mavros_command == 24 && mavros_result == 0)
           task_status_ = TaskStatus::DONE;
-        else if (mavros_command != 24 && mavros_result != 5)
+        else if (mavros_command != 24 || mavros_result != 5)
           mavros_pub_->takeoff_pub.publish(takeoff_);
         break;
 
       case Command::LAND:
         if (mavros_command == 23 && mavros_result == 0)
           task_status_ = TaskStatus::DONE;
-        else if (mavros_command != 23 && mavros_result != 5)
+        else if (mavros_command != 23 || mavros_result != 5)
           mavros_pub_->land_pub.publish(land_);
         break;
 
       case Command::HEIGHT_CONTROL:
         if (mavros_command == 113 && mavros_result == 0)
           task_status_ = TaskStatus::DONE;
-        else if (mavros_command != 113 && mavros_result != 5)
+        else if (mavros_command != 113 || mavros_result != 5)
           mavros_pub_->height_pub.publish(height_control_);
         break;
 
       case Command::YAW_CONTROL:
         if (mavros_command == 115 && mavros_result == 0)
           task_status_ = TaskStatus::DONE;
-        else if (mavros_command != 115 && mavros_result != 5)
+        else if (mavros_command != 115 || mavros_result != 5)
           mavros_pub_->yaw_pub.publish(yaw_control_);
         break;
 

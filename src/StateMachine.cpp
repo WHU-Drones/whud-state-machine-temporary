@@ -21,10 +21,10 @@ using namespace std;
 namespace whud_state_machine {
 /**
  * @brief Initialize state machine with given parameters
- * 
- * @note Construct a new State Machine:: State Machine object, define the mavros 
- * publishers, load the plugins needed and load the main task list, initialize service
- * and reset task iterator.
+ *
+ * @note Construct a new State Machine:: State Machine object, define the mavros
+ * publishers, load the plugins needed and load the main task list, initialize
+ * service and reset task iterator.
  */
 StateMachine::StateMachine()
     : nh_("~"),
@@ -67,9 +67,9 @@ StateMachine::~StateMachine() {}
 
 /**
  * @brief Start state machine and wait for shut down
- * 
- * @note Set the loop frequency of state machine(default 10Hz) and loop state machine
- * until it shuts down
+ *
+ * @note Set the loop frequency of state machine(default 10Hz) and loop state
+ * machine until it shuts down
  */
 void StateMachine::Run() {
   ros::AsyncSpinner spinner(state_machine_threads_);
@@ -85,10 +85,11 @@ void StateMachine::Run() {
 
 /**
  * @brief Set a new task or spin current task when callback.
- * 
- * @note Set a new task or spin the current task according to task status at every callback.
- * 
- * @param event A timer object which records the begin time and end time of 
+ *
+ * @note Set a new task or spin the current task according to task status at
+ * every callback.
+ *
+ * @param event A timer object which records the begin time and end time of
  * tasks to judge if tasks are out of time.
  */
 void StateMachine::LoopTimerCb(const ros::TimerEvent &event) {
@@ -105,16 +106,16 @@ void StateMachine::LoopTimerCb(const ros::TimerEvent &event) {
 
 /**
  * @brief Set a new main task.
- * 
- * @note In this function, a new main task will be set according to the order 
- * of main task list and the tast status will be changed to MAIN_TASK, which 
+ *
+ * @note In this function, a new main task will be set according to the order
+ * of main task list and the tast status will be changed to MAIN_TASK, which
  * means a new main task is spinning now.
- * 
- * @warning If disable_interrupt_flag_ is set to true because interrupt(attach) 
- * task is out of time, then the interrupt task is disabled and it will not be 
- * activated again is allowed until next main task. 
- * 
- * @param event A timer object which records the begin time and end time of 
+ *
+ * @warning If disable_interrupt_flag_ is set to true because interrupt(attach)
+ * task is out of time, then the interrupt task is disabled and it will not be
+ * activated again is allowed until next main task.
+ *
+ * @param event A timer object which records the begin time and end time of
  * tasks to judge if tasks are out of time.
  */
 void StateMachine::SetTask(const ros::TimerEvent &event) {
@@ -148,21 +149,22 @@ void StateMachine::SetTask(const ros::TimerEvent &event) {
 
 /**
  * @brief Check if interrupt task is detected and if task out of time.
- * 
- * @note Check whether interrupt signal is catched and whether task is out of time. 
- * If a interrupt signal is catched, the main task is disabled and interrupt task is 
- * enabled. If current task is main task and it's out of time, then state machine status 
- * is set to MAIN_TASK_TIMEOUT. If current task is interrupt task and it's out of time, 
- * then state machine status is set to INTERRUPT_TASK_TIMEOUT.
- * 
- * @param event A timer object which records the begin time and end time of 
+ *
+ * @note Check whether interrupt signal is catched and whether task is out of
+ * time. If a interrupt signal is catched, the main task is disabled and
+ * interrupt task is enabled. If current task is main task and it's out of time,
+ * then state machine status is set to MAIN_TASK_TIMEOUT. If current task is
+ * interrupt task and it's out of time, then state machine status is set to
+ * INTERRUPT_TASK_TIMEOUT.
+ *
+ * @param event A timer object which records the begin time and end time of
  * tasks to judge if tasks are out of time.
  */
 void StateMachine::TaskSpin(const ros::TimerEvent &event) {
   // check interrupt plugin ptr
   if (current_interrupt_task_plugin_ != nullptr) {
     // check interrupt flag
-    bool interrupt_flag = current_interrupt_task_plugin_->GetInterruptSignal();
+    bool interrupt_flag = current_main_task_plugin_->GetInterruptSignal();
     if (interrupt_flag) {
       // check last interrupt flag
       if (last_interrupt_flag_ != interrupt_flag) {
@@ -217,14 +219,14 @@ void StateMachine::TaskSpin(const ros::TimerEvent &event) {
 
 /**
  * @brief Check current status and choose next status and task.
- * 
- * @note If current task is main task and it's done or out of time, then 
- * state machine will change to FREE status and conduct next main task. 
- * If current task is interrupt(attach) task and it's done, then state 
- * machine will change to FREE status and return to the main task which is set 
- * in interrupt_task.yaml file. If current task is interrupt(attach) 
- * task and it's out of time, then state machine will change to FREE status 
- * and return the main task where interruptions happened. 
+ *
+ * @note If current task is main task and it's done or out of time, then
+ * state machine will change to FREE status and conduct next main task.
+ * If current task is interrupt(attach) task and it's done, then state
+ * machine will change to FREE status and return to the main task which is set
+ * in interrupt_task.yaml file. If current task is interrupt(attach)
+ * task and it's out of time, then state machine will change to FREE status
+ * and return the main task where interruptions happened.
  */
 void StateMachine::CheckLoopStatus() {
   switch (state_machine_status_) {
@@ -328,7 +330,7 @@ void StateMachine::CheckLoopStatus() {
 
 /**
  * @brief Create plugin object and initialize them.
- * 
+ *
  * @param plugin_name Name of plugin.
  */
 void StateMachine::LoadPlugin(std::string &plugin_name) {
@@ -339,10 +341,10 @@ void StateMachine::LoadPlugin(std::string &plugin_name) {
 
 /**
  * @brief Reserve the basic parameters required by main task.
- * 
- * @warning Parameter task_name is not required to be the same 
+ *
+ * @warning Parameter task_name is not required to be the same
  * as plugin name. It's only a string defined by user himself.
- * 
+ *
  * @param task_name Name of main task.
  */
 void StateMachine::LoadMainTask(std::string &task_name) {
@@ -358,10 +360,10 @@ void StateMachine::LoadMainTask(std::string &task_name) {
 
 /**
  * @brief Reserve the basic parameters required by interrupt task.
- * 
+ *
  * @note If no interrupt task is set("task_name" is none) or parameters
- * are parsed incorrectly, then the interrupt plugin is disabled. 
- * 
+ * are parsed incorrectly, then the interrupt plugin is disabled.
+ *
  * @param task_name Name of interrupt task.
  */
 void StateMachine::SetInterruptTask(std::string &task_name) {
@@ -390,8 +392,8 @@ void StateMachine::SetInterruptTask(std::string &task_name) {
 
 /**
  * @brief Restart state machine.
- * 
- * @note Reset the task iterator to the first task, and 
+ *
+ * @note Reset the task iterator to the first task, and
  * it's equal to restart the state machine.
  */
 void StateMachine::ResetTaskIterator() {
@@ -413,7 +415,7 @@ void StateMachine::ResetTaskIterator() {
 
 /**
  * @brief Publish the current task name.
- * 
+ *
  */
 void StateMachine::PublishCurrentTaskName() {
   std_msgs::String task_name;

@@ -21,7 +21,6 @@ using namespace std;
 namespace whud_state_machine {
 class WhudSwitch : public PluginBase {
 public:
-
   WhudSwitch() : PluginBase();
 
   void OnInit(MavRosPublisher &mavros_pub) {
@@ -30,21 +29,19 @@ public:
 
   bool SetTask(ros::V_string param) {
     PluginBase::SetTask(param);
-    if(bash_nh_.hasParam(param[0])){
-      switch_name_=param[0];
-      bash_nh_.setParam(switch_name_,false);
+    if (bash_nh_.hasParam(param[0])) {
+      switch_name_ = param[0];
+      bash_nh_.setParam(switch_name_, false);
       return true;
-    }
-    else
-      return false;    
+    } else
+      return false;
   }
 
-
   virtual void TaskSpin() override {
-      bash_nh_.param<bool>(switch_name_,switch_state_);
-      if(switch_state_){
-        task_status_ = TaskStatus::DONE;
-      }
+    bash_nh_.param<bool>(switch_name_, switch_state_);
+    if (switch_state_) {
+      task_status_ = TaskStatus::DONE;
+    }
   }
 
   virtual void StopTask() override {}

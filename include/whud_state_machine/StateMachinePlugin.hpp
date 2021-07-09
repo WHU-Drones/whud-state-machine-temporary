@@ -23,38 +23,42 @@ public:
   ~PluginBase() {}
   /**
    * @brief Get the Task Status object.
-   * 
+   *
    * @return TaskStatus task status now.
    */
   inline TaskStatus GetTaskStatus() const {
     return task_status_;
   }
+
   /**
    * @brief Get the Interrupt Signal object.
-   * 
+   *
    * @retval true Interrupt signal is catched.
    * @return false Interrupt signal is not catched.
    */
   inline bool GetInterruptSignal() const {
     return interrupt_signal_;
   }
+
   /**
    * @brief Enable the mavros control of plugin.
    */
   inline void EnableControl() {
     control_flag_ = true;
   }
-    /**
+
+  /**
    * @brief Disable the mavros control of plugin.
    */
   inline void DisableControl() {
     control_flag_ = false;
   }
+
   /**
    * @brief Judge if delay is finished.
-   * 
-   * @return true Delay time is finished. 
-   * @return false Delay time is not finished. 
+   *
+   * @return true Delay time is finished.
+   * @return false Delay time is not finished.
    */
   inline bool FinishDelay() {
     return (finish_delay_counter_++ >= finish_delay_time_ * loop_frequency_);
@@ -62,18 +66,19 @@ public:
 
   /**
    * @brief Plugin init.
-   * 
+   *
    * @param mavros_pub Mavros publisher passed by state machine.
    */
   virtual void OnInit(MavRosPublisher& mavros_pub) {
     base_nh_.param<int>("loop_frequency", loop_frequency_, 10);
     mavros_pub_ = &mavros_pub;
   }
+
   /**
    * @brief Set task with given parameters
-   * 
+   *
    * @note In this function, a new task is set and begin to run.
-   * 
+   *
    * @param param Name vector of parameters needed.
    * @return true Task is set successfully.
    * @return false Task is set insuccessfully.
@@ -99,9 +104,10 @@ protected:
   int loop_frequency_;
   float finish_delay_time_ = 0;
   int finish_delay_counter_;
+  
   /**
    * @brief Set the delay time.
-   * 
+   *
    * @param time Delay time(seconds).
    */
   inline void SetFinishDelay(float time) {
