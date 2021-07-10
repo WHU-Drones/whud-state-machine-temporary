@@ -33,9 +33,9 @@ public:
 
   /**
    * @brief Plugin init
-   * 
+   *
    * @note The mavros publisher will be initialized.
-   * 
+   *
    * @param mavros_pub Mavros publisher passed by state machine
    */
   void OnInit(MavRosPublisher &mavros_pub) {
@@ -44,15 +44,15 @@ public:
 
   /**
    * @brief Set task with given parameters
-   * 
+   *
    * @note In this function, parameters passed by state machine will be parsed,
    * the result will be published to mavros to control basic operation.
-   * 
+   *
    * @param param Parameter vector passed by state machine, plugins will set
    * task according to the paramter parse:
-   * param[0]: A string denote the basic operation, it can be "takeoff", "land", 
+   * param[0]: A string denote the basic operation, it can be "takeoff", "land",
    * "height_control" or "yaw_control".
-   * param[1:]: The parameters needed for each basic operation. The parameters 
+   * param[1:]: The parameters needed for each basic operation. The parameters
    * needed for each operation are:
    * takeoff:
    * -param[1]: z axis speed(takeoff speed)
@@ -64,9 +64,9 @@ public:
    * -param[2]: target height
    * yaw_control:
    * -param[1]: target angle
-   * -param[2]: denote param[1] is absolute angle or relative angle, 
+   * -param[2]: denote param[1] is absolute angle or relative angle,
    * 0 for absolute and 1 for relative.
-   * 
+   *
    * @retval true: Parameters are parsed correctly
    * @retval false: Parameters are parsed wrong
    */
@@ -110,6 +110,7 @@ public:
 
     } else {
       command_ = Command::NONE;
+      return false;
     }
 
     return true;
@@ -117,10 +118,10 @@ public:
 
   /**
    * @brief Spin task in regular frequency.
-   * 
-   * @note mavros_command denotes our target operation. 
+   *
+   * @note mavros_command denotes our target operation.
    * mavros_result denotes the operation status, 0 for operation
-   * done and 5 for operation in progress. 
+   * done and 5 for operation in progress.
    */
   virtual void TaskSpin() override {
     if (mavros_pub_ != nullptr && control_flag_ == true) {

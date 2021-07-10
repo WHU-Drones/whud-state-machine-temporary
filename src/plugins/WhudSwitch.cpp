@@ -1,10 +1,9 @@
 /**
- * @file WhudBasicControl.cpp
- * @author LauZanMo (LauZanMo@whu.edu.cn)
- * @author Chen Junpeng (chenjunpeng@whu.edu.cn)
- * @brief whud_basic_control plugin
+ * @file WhudSwitch.cpp
+ * @author Liuzhihao (liuzhihao@whu.edu.cn)
+ * @brief WhudSwitch plugin
  * @version 1.0
- * @date 2021-06-04
+ * @date 2021-06-22
  *
  * @copyright Copyright (c) 2021 WHU-Drones
  *

@@ -23,7 +23,7 @@ namespace whud_state_machine {
 typedef actionlib::SimpleActionClient<whud_vision::ImageProcessingAction>
     Client;
 class WhudImageClient : public PluginBase {
- public:
+public:
   /**
    * @brief Construct a new Whud Image Control object
    *
@@ -107,7 +107,7 @@ class WhudImageClient : public PluginBase {
     mavros_pub_->conversion_pub.publish(conversion);
   }
 
- private:
+private:
   ros::NodeHandle nh_;
   geometry_msgs::Twist vel;
   ros::TimerEvent timer_;
